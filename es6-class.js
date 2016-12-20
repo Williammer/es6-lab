@@ -20,3 +20,18 @@ function copyProperties(target, source) {
         }
     }
 }
+
+
+/*
+ * Static prop on class
+ */
+class T {
+    constructor(opts){
+        this._a = 's';
+    }
+}
+
+T.propp = "pppp";
+
+print("T.propp: ");
+print(T.propp);
