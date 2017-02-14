@@ -1,4 +1,6 @@
-// 1. basic template parse with es6 template literal tag function
+/**
+ * 1. basic template parse with es6 template literal tag function
+ */
 function getFullString(strings, ...interpolatedValues) { // `...` essentially slices the arguments for us.
   return strings.reduce((total, current, index) => { // use an arrow function for brevity here
     total += current;
@@ -19,10 +21,10 @@ getFullString `basic template: Hello
 ${`nested template: ${sbn}`} and and ${sbs}`;
 
 
-/*
- * 3. cleaner decoupled template fragments
- */
 
+/**
+ * 2. cleaner decoupled template fragments
+ */
 const capitalize = (string) => {
   return string[0].toUpperCase() + string.slice(1).toUpperCase();
 };
