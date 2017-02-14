@@ -29,26 +29,31 @@ const capitalize = (string) => {
   return string[0].toUpperCase() + string.slice(1).toUpperCase();
 };
 
-const deleteBtn = ({person, isAdmin}) => {
-    return isAdmin ? `<button>Delete ${capitalize(person)}</button>`: '';
+const getDeleteBtn = ({person}) => {
+    return `<button>Delete ${capitalize(person)}</button>`;
 };
 
-const pplItem = ({person, isAdmin}) => {
+const pplItem = ({person, delBtn}) => {
   return `<li>
-      <span>${capitalize(person)}</span>
-      ${deleteBtn({person, isAdmin})}
-    </li>`;
+    <span>${capitalize(person)}</span>
+    ${delBtn}
+  </li>`;
 };
 
 const pplList = ({people, isAdmin}) => {
   return `<ul>
-    ${people.map(person => `${pplItem({person, isAdmin})}`)}
+    ${people.map(person => pplItem({
+        person,
+        delBtn: isAdmin ? getDeleteBtn({person}) : ''
+      })).join('')
+    }
     </ul>`;
 };
 
 const page3 = ({ people, isAdmin }) => {
   return `<h2>People</h2>
-    ${pplList({ people, isAdmin })}`;
+    ${pplList({ people, isAdmin })}
+  `;
 };
 
 appendToBody(page3({ people: ['Keith', 'Dave', 'Amy' ], isAdmin: true }));
