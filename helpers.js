@@ -6,3 +6,7 @@ const appendToBody = html => {
 	wrap.innerHTML = html;
 	body.appendChild(wrap);
 }
+
+const printKeyValue = (key, value) => {
+	console.log(`${key}: ${value}`);
+}
