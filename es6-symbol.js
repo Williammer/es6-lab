@@ -38,7 +38,7 @@ const objWithSymbol = {
 const objWithSymbol = {
   [Symbol.iterator]: () => ({
     items: ['p', 'o', 'n', 'y', 'f', 'o', 'o'],
-    next: function next () {
+    next: function next() {
       return {
         done: this.items.length === 0,
         value: this.items.shift()
@@ -52,6 +52,7 @@ const objWithSymbol = {
 
 printKeyValue('2.0 objWithSymbol[uniqueSymbol]', objWithSymbol[uniqueSymbol]);
 printKeyValue('2.1.1 Object.keys(objWithSymbol)', Object.keys(objWithSymbol));
+printKeyValue('2.1.1 Object.getOwnPropertyNames(objWithSymbol)', Object.getOwnPropertyNames(objWithSymbol));
 printKeyValue('2.1.2 JSON.stringify(objWithSymbol)', JSON.stringify(objWithSymbol));
 print('2.1.3 not for in either...');
 
@@ -63,11 +64,43 @@ print('');
 printKeyValue('* 2.3.1 [...objWithSymbol]', [...objWithSymbol]);
 printKeyValue('* 2.3.2 Array.from(objWithSymbol)', Array.from(objWithSymbol));
 print('* 2.3.3 for(let item of objWithSymbol):');
-for(let item of objWithSymbol){
-	printKeyValue('2.3.3 each item: ', item);
+for (let item of objWithSymbol) {
+  printKeyValue('2.3.3 each item: ', item);
 }
 print('');
 
+// 2.4 iterator wth generator
+print(`
+* 2.4 iterator wth generator:
+	class Collection { * [Symbol.iterator]() {
+	    var i = 0;
+	    while (this[i] !== undefined) {
+	      yield this[i];
+	      ++i;
+	    }
+	  }
+	}
+
+	let myCollection = new Collection();
+	myCollection[0] = 1;
+	myCollection[1] = 2;
+`);
+
+class Collection { * [Symbol.iterator]() {
+    var i = 0;
+    while (this[i] !== undefined) {
+      yield this[i];
+      ++i;
+    }
+  }
+}
+
+let myCollection = new Collection();
+myCollection[0] = 1;
+myCollection[1] = 2;
+for (let value of myCollection) {
+  print(`2.4.1 myCollection value: ${value}`); // 1, then 2
+}
 
 // 3.0. instanceof Extended class false by default
 class MyArrayInherit extends Array {}
@@ -96,3 +129,6 @@ Symbol.match:
 	literal[Symbol.match] = false;
 	text.startsWith(literal) ： ${text.startsWith(literal)}
 `);
+
+
+// 5+ well-know Symbol: https://www.keithcirkel.co.uk/metaprogramming-in-es6-symbols/
