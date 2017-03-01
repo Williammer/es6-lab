@@ -39,8 +39,13 @@ const handler = {
 
 const proxy = new Proxy(target, handler)
 
+
+
+
+
 print(`
 // 1. trap set/get/has to prevent access to protected properties.
+
 const target = { _prop: 'foo', pony: 'foo' }
 const handler = {
   get(target, key) {
@@ -125,9 +130,15 @@ for (let key of Object.keys(proxy)) {
 printKeyValue('Reflect.ownKeys(proxy)', Reflect.ownKeys(proxy));
 // <- 'pony'
 
+
+
+
 print(`
 ---------------------------------------------------------------------------------------
 `)
+
+
+
 
 // 2. handler.apply
 function sum(left, right) {
@@ -142,8 +153,12 @@ const twice = {
 
 const proxy2 = new Proxy(sum, twice)
 
+
+
+
 print(`
 // 2. handler.apply
+
 function sum(left, right) {
   return left + right
 }
