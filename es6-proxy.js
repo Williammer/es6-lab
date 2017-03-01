@@ -110,6 +110,7 @@ for (let key in proxy) {
   print(key)
     // <- no '_prop'
 }
+
 print(`
   for (let key of Object.keys(proxy)) {
     print(key)
