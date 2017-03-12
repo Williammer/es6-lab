@@ -133,7 +133,7 @@ console.log([...trailmix()])
   // <- [0, 1, 2, 4, 6, 8, 10, 6, 9, 12, 15, 'p', 'o', 'n', 'y', 'f', 'o', 'o']
 
 
-// 5. handle promise
+// 5. handle async - promise
 const getTitleFromUrl = function*() {
   const url = 'https://jsonplaceholder.typicode.com/posts/1';
   let title = '',
@@ -189,3 +189,43 @@ function coPromise(gen) {
 coPromise(getTitleFromUrl)
   .catch(e => console.error('------' + e))
   .then(end => console.log('------' + end));
+
+
+// 6. handle async - callback
+const foo = (name, callback) => {
+  setTimeout(() => {
+    callback(name);
+  }, 1000);
+};
+
+const curry = (method, ...args) => {
+  return (arg) => {
+    args.push(arg);
+
+    return method.apply({}, args);
+  };
+};
+
+const coCallback = (generator) => {
+  const iterator = generator();
+
+  const _next = (name) => {
+    var fooPartial;
+
+    fooPartial = iterator.next(name);
+
+    if (!fooPartial.done) {
+      fooPartial.value(_next);
+    }
+  }
+
+  _next();
+};
+
+coCallback(function*() {
+  const a = yield curry(foo, 'a');
+  const b = yield curry(foo, 'b');
+  const c = yield curry(foo, 'c');
+
+  console.log('---------- ', a, b, c);
+});
