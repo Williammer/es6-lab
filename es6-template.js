@@ -17,9 +17,9 @@ function getFullString(strings, ...interpolatedValues) { // `...` essentially sl
 const sb = 'SB',
   sbn = 'n-SB',
   sbs = 'SBS';
-getFullString `basic template: Hello
+const fullstr = getFullString `basic template: Hello
 ${`nested template: ${sbn}`} and and ${sbs}`;
-
+print(`------fullstr: ${fullstr}`);
 
 
 /**
