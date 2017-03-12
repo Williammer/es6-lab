@@ -2,16 +2,16 @@
 print(`
 1. Inifinte get values.
 
-	function* fibs() {
-	  let a = 0;
-	  let b = 1;
-	  while (true) {
-	    yield a;
-	    [a, b] = [b, a + b];
-	  }
-	}
+  function* fibs() {
+    let a = 0;
+    let b = 1;
+    while (true) {
+      yield a;
+      [a, b] = [b, a + b];
+    }
+  }
 
-	let [a, b, c, d, e, f] = fibs();
+  let [a, b, c, d, e, f] = fibs();
 `);
 
 function* fibs() {
@@ -37,19 +37,19 @@ printKeyValue('f', f);
 print(`
 2. Generator used for Iterator
 
-	const infinity = {
-	  [Symbol.iterator]: function*() {
-	    var c = 1;
-	    for (;;) {
-	      yield c++;
-	    }
-	  }
-	}
-	for (const n of infinity) {
-	  // truncate the sequence at 1000
-	  if (n > 10)
-	    break;
-	}
+  const infinity = {
+    [Symbol.iterator]: function*() {
+      var c = 1;
+      for (;;) {
+        yield c++;
+      }
+    }
+  }
+  for (const n of infinity) {
+    // truncate the sequence at 1000
+    if (n > 10)
+      break;
+  }
 `);
 
 const infinity = {
@@ -67,3 +67,104 @@ for (const n of infinity) {
     break;
   print(n);
 }
+
+
+// 3. spread the iterable
+function* generator0() {
+  yield 'p'
+  console.log('o')
+  yield 'n'
+  console.log('y')
+  yield 'f'
+  console.log('o')
+  yield 'o'
+  console.log('!')
+}
+
+var foo0 = generator0()
+console.log([...foo0])
+console.log(Array.from(foo0))
+  // <- 'o'
+  // <- 'y'
+  // <- 'o'
+  // <- '!'
+  // <- ['p', 'n', 'f', 'o']
+
+
+function* generator() {
+  yield * 'ponyfoo'
+}
+console.log([...generator()])
+  // or just
+console.log([...
+  'ponyfoo'
+])
+
+
+// 4. iterator for array
+var foo = {
+  [Symbol.iterator]: () => ({
+    items: ['p', 'o', 'n', 'y', 'f', 'o', 'o'],
+    next: function next() {
+      return {
+        done: this.items.length === 0,
+        value: this.items.shift()
+      }
+    }
+  })
+}
+
+function* multiplier(value) {
+  yield value * 2
+  yield value * 3
+  yield value * 4
+  yield value * 5
+}
+
+function* trailmix() {
+  yield 0
+  yield * [1, 2]
+  yield * [...multiplier(2)]
+  yield * multiplier(3)
+  yield * foo
+}
+console.log([...trailmix()])
+  // <- [0, 1, 2, 4, 6, 8, 10, 6, 9, 12, 15, 'p', 'o', 'n', 'y', 'f', 'o', 'o']
+
+
+// 5. handle promise
+const getTitleFromUrl = function*() {
+  const url = 'https://jsonplaceholder.typicode.com/posts/1';
+
+  let response = yield fetch(url);
+  let json = yield response.json();
+
+  let title = json.title;
+  return title;
+}
+
+
+function coPromise(gen) {
+  var iterator = gen();
+
+  function _nextStep(it) {
+    console.log('it.value: ' + it.value);
+    console.log('it.done: ' + it.done);
+
+    if (it.done) return it.value;
+
+    let value = it.value;
+
+    if (value instanceof Promise) {
+      return value.then(response => _nextStep(iterator.next(response)));
+    } else {
+      return _nextStep(iterator.next(it.value));
+    }
+  }
+
+  return _nextStep(iterator.next());
+}
+
+coPromise(getTitleFromUrl)
+  .catch(e => console.error(e))
+  .then(end => console.log('------' + end));
