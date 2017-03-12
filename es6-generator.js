@@ -121,6 +121,7 @@ function* multiplier(value) {
   yield value * 5
 }
 
+// yield* handles sub-generator/iterables like spread
 function* trailmix() {
   yield 0
   yield * [1, 2]
@@ -135,30 +136,50 @@ console.log([...trailmix()])
 // 5. handle promise
 const getTitleFromUrl = function*() {
   const url = 'https://jsonplaceholder.typicode.com/posts/1';
+  let title = '',
+    response = '',
+    json = {};
 
-  let response = yield fetch(url);
-  let json = yield response.json();
+  try {
+    response = yield fetch(url);
+    json = yield response.json();
+  } catch (e) {
+    console.error('[getTitleFromUrl] ' + e);
+    return;
+  }
 
-  let title = json.title;
+  title = json.title;
+  console.log('++++' + title);
   return title;
 }
 
 
 function coPromise(gen) {
-  var iterator = gen();
+  var iterator = gen(),
+    count = 0;
 
   function _nextStep(it) {
-    console.log('it.value: ' + it.value);
-    console.log('it.done: ' + it.done);
+    try {
+      console.log('it.value: ' + it.value);
+      console.log('it.done: ' + it.done);
 
-    if (it.done) return it.value;
+      if (it.done) return it.value;
 
-    let value = it.value;
+      let value = it.value;
 
-    if (value instanceof Promise) {
-      return value.then(response => _nextStep(iterator.next(response)));
-    } else {
-      return _nextStep(iterator.next(it.value));
+      if (value instanceof Promise) {
+        if (count === 1) {
+          // throw new Error('<<>< pause!');
+        }
+        count++;
+        return value.then(response => _nextStep(iterator.next(response)));
+      } else {
+        return _nextStep(iterator.next(it.value));
+      }
+
+    } catch (e) {
+      console.error('[_nextStep] ' + e);
+      iterator.throw(e); // generator error passing
     }
   }
 
@@ -166,5 +187,5 @@ function coPromise(gen) {
 }
 
 coPromise(getTitleFromUrl)
-  .catch(e => console.error(e))
+  .catch(e => console.error('------' + e))
   .then(end => console.log('------' + end));
