@@ -1,10 +1,11 @@
+// @flow
 /*
  * Arrow function; Spread/Rest; Iterator/for..of
  */
 
 
 // 1. basic arrow function
-const upper = input => input.toUpperCase()
+const upper = (input: string): string => input.toUpperCase()
 
 // 2.1 Spread/Rest turn arguments into real array
 const show = (info, ...others) => {
