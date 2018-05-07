@@ -46,6 +46,72 @@ let Class = (function() {
 }());
 
 
+// Another example:
+// Requirements:
+// ?  0. prototype real-only // chrome didn't seem hv it
+
+  // 1. strict mode by default
+
+  // 2.1 throw if called class function directly
+
+  // 2.2 throw if new the method
+
+  // 2.3 throw if try to override class variable inside
+  // 2.4 reject silently if try to override class name
+
+  // 3. not hoisted, use let/const
+
+  // 4. non-enumable methods, use defineProperty for methods
+
+
+
+
+/* class Sample {
+  constuctor() {
+    this._inited = true;
+  }
+
+  meth(){
+    console.log('I am method');
+  }
+}
+*/
+
+
+var Sample = (function (){
+  'use strict';
+
+  const Sample = function () {
+    if (typeof new.target === 'undefined') {
+      throw new Error('throw if called class function directly')
+    }
+    this._inited = true;
+  }
+
+  Object.defineProperty(Sample.prototype, 'name', {
+    configurable: false,
+    // set: function(){
+    //  throw new Error('should not set class name');
+    // },
+    get: function(){
+      return 'Sample';
+    },
+  })
+
+  Object.defineProperty(Sample.prototype, 'meth', {
+    enumerable: false,
+    value: function(){
+      if (typeof new.target !== 'undefined') {
+        throw new Error('throw if new the method')
+      }
+      console.log('I am method');
+    },
+  })
+
+  return Sample;
+})()
+
+var b = new Sample('param');
 
 // ------------------------------
 //  to be verified
